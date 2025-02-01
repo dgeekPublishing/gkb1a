@@ -5,6 +5,9 @@
 
 <img src="assets/gkbMainSelection.png" width=505>
 
+> **I'm currently in the process of moving everything possible from my old thedesignatedgeek repository to this one.**
+
+
 > ***NOTE   NOTE    NOTE***
 > 
 > This is a work in progress and is ***NOT*** (in any way, shape, form, fashion or stretch of the imagination) ready to be used by anyone.  I hope that I will be able to have a semi-usable version ready for "alpha-level" release by January 15, 2023.

@@ -7,6 +7,8 @@
 #    Jan 08, 2024 05:55:15 AM CST  platform: Linux
 #    Jan 09, 2024 05:10:09 AM CST  platform: Linux
 #    Jan 12, 2024 03:53:24 AM CST  platform: Linux
+#    Apr 24, 2024 04:35:29 AM CDT  platform: Linux
+#    Jan 28, 2025 02:44:11 PM CST  platform: Linux
 
 # ======================================================
 #                   gkb_support.py
@@ -53,7 +55,23 @@
 #       Added swap of keyword/topic to top search bar - currently
 #         only works on single topic return.  Multiple topic returns
 #         brings up messagebox.
+# 0.1.4 - 01/28/2025
+#       Updated to PAGE 8.0 Release
+#       Modified Database structure to include date/time entry added and GKB Version number
+#       Modified Popup menus for proper support
+#       _w1.ScrolledText4 is currently the only Text widget that supports 'Select All'.
+#         Need to get that supported in other Scrolled Text Widgets.
+#
+#
 # ======================================================
+# Due to the fact that there are four ScrolledText widgets, and I can't keep them straight,
+# I thought I'd explain which one is which here.
+# --------------------------------------------------------------------------------------------
+#   ScrolledText1 - FrameMainText - Search Results
+#   ScrolledText2 - FrameSearchResults - Select
+#   ScrolledText3 - FrameEditor - New Entry/Edit
+#   ScrolledText4 - FrameSQL - All Topic
+#
 import sys
 import os.path
 import platform
@@ -63,7 +81,7 @@ import pprint
 import sqlite3
 import datetime
 import shared
-from dbutils import quote
+from dbutils import quote, timestamp, from_timestamp
 import webbrowser
 
 # ===============================================
@@ -75,13 +93,13 @@ import tkinter.messagebox as messagebox
 
 import gkb
 
-_debug = False  # False to eliminate debug printing from callback functions.
-_debug2 = False
-_debug3 = False
-_debug4 = False
+_debug = True  # False to eliminate debug printing from callback functions.
+_debug2 = True
+_debug3 = True
+_debug4 = True
 location = gkb._location
 programName = "Greg's Knowledge Base"
-version = "0.1.3"
+version = "0.1.4"
 
 
 def main(*args):
@@ -532,37 +550,67 @@ def on_popCopy(*args):
         for arg in args:
             print("    another arg:", arg)
         sys.stdout.flush()
-    if args[0] == 1:
-        root.clipboard_clear()  # clear clipboard contents
-        sel_start, sel_end = _w1.Scrolledtext1.tag_ranges("sel")
-        if sel_start and sel_end:
-            root.clipboard_append(_w1.Scrolledtext1.get(sel_start, sel_end))
-        else:
-            root.clipboard_append(_w1.Scrolledtext1.get(1.0, END))
-    if args[0] == 2:
-        root.clipboard_clear()  # clear clipboard contents
-        sel_start, sel_end = _w1.Scrolledtext2.tag_ranges("sel")
-        if sel_start and sel_end:
-            root.clipboard_append(_w1.Scrolledtext2.get(sel_start, sel_end))
-        else:
-            root.clipboard_append(_w1.Scrolledtext2.get(1.0, END))
-    if args[0] == 3:
-        root.clipboard_clear()  # clear clipboard contents
-        sel_start, sel_end = _w1.Scrolledtext3.tag_ranges("sel")
-        if sel_start and sel_end:
-            root.clipboard_append(_w1.Scrolledtext3.get(sel_start, sel_end))
-        else:
-            root.clipboard_append(_w1.Scrolledtext3.get(1.0, END))
-
+    a0 = args[0]
+    print(f"args[0] type: {type(args[0])}")
     if args[0] == 4:
-        root.clipboard_clear()  # clear clipboard contents
-        sel_start, sel_end = _w1.Scrolledtext4.tag_ranges("sel")
-        if _debug3:
-            print(f"{sel_start=} - {sel_end=}")
-        if sel_start and sel_end:
-            root.clipboard_append(_w1.Scrolledtext4.get(sel_start, sel_end))
-        else:
-            root.clipboard_append(_w1.Scrolledtext4.get(1.0, END))
+        print("TRUE")
+    else:
+        print("FALSE")
+    print(f"{args[0]==4}")
+    match args[0]:
+        case (1,):
+            root.clipboard_clear()  # clear clipboard contents
+            if _w1.Scrolledtext1.selection_get():
+                data = _w1.Scrolledtext1.selection_get()
+                root.clipboard_append(data)
+            # sel_start, sel_end = _w1.Scrolledtext1.tag_ranges("sel")
+            # if sel_start and sel_end:
+            #     root.clipboard_append(_w1.Scrolledtext1.get(sel_start, sel_end))
+            # else:
+            #     root.clipboard_append(_w1.Scrolledtext1.get(1.0, END))
+        case (2,):
+            root.clipboard_clear()  # clear clipboard contents
+            sel_start, sel_end = _w1.Scrolledtext2.tag_ranges("sel")
+            if sel_start and sel_end:
+                root.clipboard_append(_w1.Scrolledtext2.get(sel_start, sel_end))
+            else:
+                root.clipboard_append(_w1.Scrolledtext2.get(1.0, END))
+        case (3,):
+            root.clipboard_clear()  # clear clipboard contents
+            sel_start, sel_end = _w1.Scrolledtext3.tag_ranges("sel")
+            if sel_start and sel_end:
+                root.clipboard_append(_w1.Scrolledtext3.get(sel_start, sel_end))
+            else:
+                root.clipboard_append(_w1.Scrolledtext3.get(1.0, END))
+        case (4,):
+            root.clipboard_clear()  # clear clipboard contents
+            tagnames = _w1.Scrolledtext4.tag_names()
+            if _debug4:
+                print(tagnames)
+
+            if len(tagnames) == 1:
+                sel_start, sel_end = _w1.Scrolledtext4.tag_ranges("sel")
+            else:
+                if _debug4:
+                    print(tagnames[1])
+                sel_start, sel_end = _w1.Scrolledtext4.tag_ranges("start")
+            if sel_start and sel_end:
+                root.clipboard_append(_w1.Scrolledtext4.get(sel_start, sel_end))
+            else:
+                root.clipboard_append(_w1.Scrolledtext4.get(1.0, END))
+
+            _w1.Scrolledtext4.tag_delete("start")
+            # root.clipboard_clear()  # clear clipboard contents
+            # # if _w1.Scrolledtext1.selection_get():
+            # #     data = _w1.Scrolledtext1.selection_get()
+            # #     root.clipboard_append(data)
+            # sel_start, sel_end = _w1.Scrolledtext4.tag_ranges("sel")
+            # if _debug3:
+            #     print(f"{sel_start=} - {sel_end=}")
+            # if sel_start and sel_end:
+            #     root.clipboard_append(_w1.Scrolledtext4.get(sel_start, sel_end))
+            # else:
+            #     root.clipboard_append(_w1.Scrolledtext4.get(1.0, END))
 
 
 def on_popPaste(*args):
@@ -894,6 +942,14 @@ def lbBtn3_2(*args):
 # ===================================================
 
 
+def on_pop1CloseMenu(*args):
+    if _debug:
+        print("gkb_support.on_pop1CloseMenu")
+        for arg in args:
+            print("    another arg:", arg)
+        sys.stdout.flush()
+
+
 def on_pop2CloseMenu(*args):
     if _debug:
         print("gkb_support.on_pop2CloseMenu")
@@ -1074,16 +1130,16 @@ where info.active=1"""
 
 def queryTopic_search(topic):
     sql = f"""SELECT
-	info.pkid,
-	info.topic,
-	info.code,
-	info.active
+    info.pkid,
+    info.topic,
+    info.code,
+    info.active
 FROM
-	info
+    info
 
 WHERE
-	info.topic LIKE "%{topic}%"
-	AND info.active = 1"""
+    info.topic LIKE "%{topic}%"
+    AND info.active = 1"""
     if _debug4:
         print(sql)
     recs = list(cursor.execute(sql))
@@ -1146,24 +1202,50 @@ def queryGetAllActiveTopics():
         print("into queryGetAllActiveTopics")
     query = """
 SELECT
-	info.topic,
-	info.pkid,
-	info.active,
-	info.code
+    info.topic,
+    info.pkid,
+    info.active,
+    info.code
 FROM
-	info
+    info
 WHERE
-	info.active = 1
+    info.active = 1
 GROUP BY
-	info.topic
+    info.topic
 ORDER BY
-	info.topic ASC    
+    info.topic ASC
 
 """
     retn = list(cursor.execute(query))
     if _debug4:
         print(retn)
     return retn
+
+
+def on_pop1SelectAll(*args):
+    if _debug:
+        print("gkb_support.on_pop1SelectAll")
+        for arg in args:
+            print("    another arg:", arg)
+        sys.stdout.flush()
+    data = select_all()
+    print(data)
+
+
+def on_popCloseMenu(*args):
+    if _debug:
+        print("gkb_support.on_popCloseMenu")
+        for arg in args:
+            print("    another arg:", arg)
+        sys.stdout.flush()
+
+
+# GDW - Added 01/28/2025
+def select_all(*args):
+    # def select_text():
+    _w1.Scrolledtext4.tag_add("start", "1.0", "end")
+    # selectbackground = "skyblue2"
+    _w1.Scrolledtext4.tag_configure("start", background="skyblue2", foreground="white")
 
 
 if __name__ == "__main__":

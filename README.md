@@ -1,6 +1,12 @@
 # Gregs_knowledge_base
 
 ---
+Current version - 0.1.4
+
+Copyright © 2023, 2024, 2025 by G.D. Walters
+
+This source code is released under the MIT License
+
 
 
 <img src="assets/gkbMainSelection.png" width=505>
@@ -10,9 +16,11 @@
 
 > ***NOTE   NOTE    NOTE***
 > 
-> This is a work in progress and is ***NOT*** (in any way, shape, form, fashion or stretch of the imagination) ready to be used by anyone.  I hope that I will be able to have a semi-usable version ready for "alpha-level" release by January 15, 2023.
+> This is a work in progress and is ***NOT*** (in any way, shape, form, fashion or stretch of the imagination) ready to be used by anyone.  I hope that I will be able to have a semi-usable version ready for "alpha-level" release by March 15, 2025.
 > 
 > **Download at your own risk**
+
+
 
 For the last 4 years or so, I've kept a text file on my desktop that contains what I considered to be a list of helpful snippets of code for my Python and especially PAGE programming projects.  It's been helpful to me and I use it at least 4 times a week.
 

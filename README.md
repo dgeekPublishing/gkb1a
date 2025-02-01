@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 # Greg's Knowledge Base
 
 ## Current version - 0.1.4
@@ -7,6 +8,14 @@
 ### Copyright © 2023, 2024, 2025 by G.D. Walters
 
 ####  This source code is released under the MIT License
+=======
+---
+Current version - 0.1.4
+
+Copyright © 2023, 2024, 2025 by G.D. Walters
+
+This source code is released under the MIT License
+>>>>>>> origin/main
 
 
 
